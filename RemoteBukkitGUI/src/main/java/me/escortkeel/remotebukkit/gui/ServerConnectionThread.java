@@ -80,15 +80,15 @@ public class ServerConnectionThread extends Thread {
 
             sd.getProg().setString("Done!");
             sd.getProg().setValue(100);
-
+            
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ex) {
             }
+            
+            sd.dispose();
 
             gui.setVisible(true);
-
-            sd.dispose();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(sd, "Failed to connect to server:\n\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 
