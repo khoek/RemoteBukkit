@@ -72,6 +72,9 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
         <Component class="me.escortkeel.remotebukkit.gui.ColorPane" name="console">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

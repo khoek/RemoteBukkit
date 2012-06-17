@@ -37,14 +37,10 @@ import javax.swing.text.AbstractDocument;
  */
 public class StartDialog extends javax.swing.JFrame {
 
-    public static final int MAJOR = 1;
-    public static final int MINOR = 0;
-    public static final int BUILD = 1;
-
     public StartDialog() {
         initComponents();
 
-        version.setText("RemoteBukkit GUI v" + MAJOR + "." + MINOR + "." + BUILD);
+        version.setText("RemoteBukkit GUI v" + Main.MAJOR + "." + Main.MINOR + "." + Main.BUILD);
 
         setLocationRelativeTo(null);
 

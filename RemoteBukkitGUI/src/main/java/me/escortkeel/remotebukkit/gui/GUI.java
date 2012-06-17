@@ -69,6 +69,7 @@ public class GUI extends JFrame {
             }
         });
 
+        console.setEditable(false);
         jScrollPane2.setViewportView(console);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

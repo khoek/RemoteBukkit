@@ -35,6 +35,10 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Main {
 
+    public static final int MAJOR = 1;
+    public static final int MINOR = 0;
+    public static final int BUILD = 2;
+    
     public static void main(String[] args) throws IOException {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
