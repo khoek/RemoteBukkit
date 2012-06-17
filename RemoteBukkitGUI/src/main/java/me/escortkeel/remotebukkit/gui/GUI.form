@@ -73,7 +73,13 @@
       <SubComponents>
         <Component class="me.escortkeel.remotebukkit.gui.ColorPane" name="console">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="0" green="0" red="0" type="rgb"/>
+            </Property>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="UI" type="javax.swing.plaf.TextUI" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.plaf.basic.BasicEditorPaneUI()" type="code"/>
+            </Property>
           </Properties>
         </Component>
       </SubComponents>

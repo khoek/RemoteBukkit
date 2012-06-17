@@ -25,25 +25,25 @@
  */
 package me.escortkeel.remotebukkit.gui;
 
-import java.awt.Color;
 import java.io.PrintStream;
 import javax.swing.JFrame;
+import javax.swing.text.DefaultCaret;
 
 /**
  *
  * @author Keeley Hoek (escortkeel)
  */
 public class GUI extends JFrame {
+
     private final PrintStream out;
 
     public GUI(PrintStream out) {
         this.out = out;
-        
-        initComponents();    
-        
-        console.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
-        console.setBackground(Color.BLACK);
-        
+
+        initComponents();
+
+        ((DefaultCaret) console.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
         setLocationRelativeTo(null);
     }
 
@@ -69,7 +69,9 @@ public class GUI extends JFrame {
             }
         });
 
+        console.setBackground(new java.awt.Color(0, 0, 0));
         console.setEditable(false);
+        console.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
         jScrollPane2.setViewportView(console);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -97,13 +99,11 @@ public class GUI extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void inputFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputFieldActionPerformed
-        if(!evt.getActionCommand().isEmpty()) {
+        if (!evt.getActionCommand().isEmpty()) {
             out.println(evt.getActionCommand());
             inputField.setText("");
         }
     }//GEN-LAST:event_inputFieldActionPerformed
-
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private me.escortkeel.remotebukkit.gui.ColorPane console;
     private javax.swing.JTextField inputField;
