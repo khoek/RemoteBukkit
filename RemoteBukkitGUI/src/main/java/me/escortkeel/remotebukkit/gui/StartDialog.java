@@ -195,7 +195,7 @@ public class StartDialog extends javax.swing.JFrame {
         launchGUI();
     }//GEN-LAST:event_passwordActionPerformed
 
-    private void launchGUI() {
+    public void launchGUI() {
         if (host.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a hostname.", "Error", JOptionPane.ERROR_MESSAGE);
         } else if (port.getText().isEmpty()) {
@@ -206,6 +206,10 @@ public class StartDialog extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please enter a password.", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             launchButton.setEnabled(false);
+            host.setEnabled(false);
+            port.setEnabled(false);
+            username.setEnabled(false);
+            password.setEnabled(false);
 
             new ServerConnectionThread(this).start();
         }

@@ -26,6 +26,8 @@
 package me.escortkeel.remotebukkit.gui;
 
 import java.io.IOException;
+import java.util.Arrays;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -36,10 +38,15 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Main {
 
     public static final int MAJOR = 1;
-    public static final int MINOR = 0;
-    public static final int BUILD = 4;
-    
+    public static final int MINOR = 1;
+    public static final int BUILD = 1;
+
     public static void main(String[] args) throws IOException {
+        System.out.println("Launching RemoteBukkit GUI Client v" + MAJOR + "." + MINOR + "." + BUILD + "!");
+        System.out.println();
+        System.out.println("By Keeley Hoek (escortkeel)");
+        System.out.println();
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -53,6 +60,59 @@ public class Main {
         } catch (UnsupportedLookAndFeelException ex) {
         }
 
-        new StartDialog().setVisible(true);
+        StartDialog sd = new StartDialog();
+
+        if (args.length > 0) {
+            if (args.length == 1) {
+                if (args[0].equals("--help")) {
+                    printHelpAndExit(0);
+                } else {
+                    System.out.println("Incorrect Argument Syntax!");
+                    printHelpAndExit(1);
+                }
+            } else if (args.length == 3) {
+                String[] hostAndPort = args[0].split(":");
+
+                if (hostAndPort.length != 2 || args[0].isEmpty() || args[1].isEmpty()) {
+                    System.out.println("Incorrect Argument Syntax!");
+                    printHelpAndExit(1);
+                }
+
+                try {
+                    Integer.parseInt(hostAndPort[1]);
+                } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(null, hostAndPort[1] + " is not a valid 32-bit integer.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                    System.exit(1);
+                }
+
+                sd.getHost().setText(hostAndPort[0]);
+                sd.getPort().setText(hostAndPort[1]);
+                sd.getUsername().setText(args[1]);
+                sd.getPassword().setText(args[2]);
+
+                sd.setVisible(true);
+
+                sd.launchGUI();
+
+            } else {
+                System.out.println("Incorrect Argument Syntax!");
+                printHelpAndExit(1);
+            }
+        } else {
+            sd.setVisible(true);
+        }
+    }
+
+    private static void printHelpAndExit(int exitCode) {
+        System.out.println("Run the GUI with no arguments to open the Login Dialog.");
+        System.out.println("Run the GUI with the following arguments and it will attempt to use the supplied parameters to login automatically:");
+        System.out.println();
+        System.out.println("Use: [hostname:ip] [user] [pass] <switches>");
+        System.out.println();
+        System.out.println("Switches:");
+        System.out.println("--help       Prints this help message.");
+
+        System.exit(exitCode);
     }
 }

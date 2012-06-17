@@ -49,9 +49,23 @@ public class ServerConnectionThread extends Thread {
             sd.getProg().setValue(0);
 
             final Socket s = new Socket(sd.getHost().getText(), Integer.parseInt(sd.getPort().getText()));
+            
+            sd.getProg().setString("Registering Shutdown Hooks");
+            sd.getProg().setValue(25);
+
+            Runtime.getRuntime().addShutdownHook(new Thread("Shutdown Thread") {
+
+                @Override
+                public void run() {
+                    try {
+                        s.close();
+                    } catch (IOException ex) {
+                    }
+                }
+            });
 
             sd.getProg().setString("Starting Connection Handler");
-            sd.getProg().setValue(33);
+            sd.getProg().setValue(50);
 
             PrintStream out = new PrintStream(s.getOutputStream());
 
@@ -73,19 +87,19 @@ public class ServerConnectionThread extends Thread {
             });
 
             sd.getProg().setString("Authenticating");
-            sd.getProg().setValue(66);
+            sd.getProg().setValue(75);
 
             out.println(sd.getUsername().getText());
             out.println(new String(sd.getPassword().getPassword()));
 
             sd.getProg().setString("Done!");
             sd.getProg().setValue(100);
-            
+
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ex) {
             }
-            
+
             sd.dispose();
 
             gui.setVisible(true);

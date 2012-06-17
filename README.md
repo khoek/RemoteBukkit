@@ -1,6 +1,6 @@
 # RemoteBukkit
 ## General
-RemoteBukkit allows admins to, with the help of a plugin, remotely use the server's console. You do this by running a console client on you computer and you provide this client with the hostname and port on which the RemoteBukkit plugin's server is running. Of course you will also need to provide the client with the server's username and password (set up in the plugin config file) for security.
+RemoteBukkit allows admins to, with the help of a plugin, remotely use the server's console. You do this by running a client on your computer and you provide this client with the hostname and port on which the RemoteBukkit plugin's server is running. Of course you will also need to provide the client with the server's username and password (set up in the plugin config file) for security.
 
 So, provided the server has the RemoteBukkit plugin installed, admins can remotely use the Bukkit Console to control the server and execute Bukkit console commands server side.
 
@@ -16,6 +16,15 @@ Simply place the plugin in the standard Bukkit plugin directory and it will auto
 
 ### GUI Client
 RemoteBukkit offers a very simple and easy to use GUI client which you can use to connect to the plugin. Just double click on the GUI's jarfile to run it. The GUI features a self-explanatory interface where you supply the hostname, port, username and password of the RemoteBukkit server.
+
+Run the GUI with no arguments to open the Login Dialog.
+Run the GUI with the following arguments and it will attempt to use the supplied parameters to login automatically:
+
+Use: [hostname:ip] [user] [pass] <switches>
+
+**Switches**
+
+* --help - Prints this help message.
 
 ### Console Client
 If you prefer to use a console-based application to connect to the RemoteBukkit plugin you can too! The console argument syntax is very simple but the program but will print help information if you supply no/the wrong number of/invalid arguments:
