@@ -28,6 +28,4 @@ Use: [hostname:ip] [user] [pass] <switches>
 * --pefixlevel - Prefixes each output message with the log level. 
 
 ##Download
-The latest plugin build can be downloaded [here](http://dev.bukkit.org/server-mods/remotebukkit/files/12-plugin-v1-2-1/).  
-The latest GUI build can be downloaded [here](http://dev.bukkit.org/server-mods/remotebukkit/files/11-gui-v1-0-1/).  
-The latest console build can be downloaded [here](http://dev.bukkit.org/server-mods/remotebukkit/files/10-console-v1-3-1/).  
+The latest builds can be downloaded [here](http://dev.bukkit.org/server-mods/remotebukkit/files/).
