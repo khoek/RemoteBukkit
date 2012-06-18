@@ -26,7 +26,6 @@
 package me.escortkeel.remotebukkit.gui;
 
 import java.io.IOException;
-import java.util.Arrays;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
