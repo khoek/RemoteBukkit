@@ -4,7 +4,7 @@
 
   <groupId>me.escortkeel</groupId>
   <artifactId>RemoteBukkitGUI</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
   <packaging>jar</packaging>
 
   <name>RemoteBukkitGUI</name>
