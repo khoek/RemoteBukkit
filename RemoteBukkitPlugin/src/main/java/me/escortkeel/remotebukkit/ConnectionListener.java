@@ -52,10 +52,11 @@ public class ConnectionListener extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                Socket sock = s.accept();
-
+        while (true) {
+            Socket sock;
+            try {
+                sock = s.accept();
+                
                 try {
                     ConnectionHandler handler = new ConnectionHandler(sock);
 
@@ -95,11 +96,6 @@ public class ConnectionListener extends Thread {
 
                     throw e;
                 }
-            }
-        } catch (IOException ex) {
-        } finally {
-            try {
-                s.close();
             } catch (IOException ex) {
             }
         }
