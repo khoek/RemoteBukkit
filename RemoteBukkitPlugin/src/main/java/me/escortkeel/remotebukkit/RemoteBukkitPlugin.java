@@ -23,7 +23,6 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package me.escortkeel.remotebukkit;
 
 import java.io.IOException;
@@ -35,37 +34,40 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RemoteBukkitPlugin extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft");
-    private LogHandler handler = new LogHandler();
+    private LogHandler handler;
     private ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
     private static ArrayList<String> oldMsgs = new ArrayList<String>();
     private ConnectionListener listener;
-    private static RemoteBukkitPlugin instance;
-
-    public static RemoteBukkitPlugin getInstance() {
-        return instance;
-    }
+    private final ArrayList<String> queuedCommands = new ArrayList<String>();
 
     @Override
     public void onLoad() {
-        instance = this;
-
         getConfig().options().copyDefaults(true);
     }
 
     @Override
     public void onEnable() {
+        handler = new LogHandler(this);
+        
         log.log(Level.INFO, getDescription().getFullName().concat(" is enabled! By Keeley Hoek (escortkeel)"));
         log.addHandler(handler);
+
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+
+            public void run() {
+                dispatchCommands();
+            }
+        }, 1, 1);
 
         int port = getConfig().getInt("port");
 
         if (port <= 1000) {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified, using default port 25564");
-            
+
             port = 25564;
         }
 
-        listener = new ConnectionListener(port);
+        listener = new ConnectionListener(this, port);
         listener.start();
 
         saveConfig();
@@ -78,7 +80,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         kill();
     }
 
-    public synchronized void broadcast(String msg) {        
+    public synchronized void broadcast(String msg) {
         oldMsgs.add(msg);
 
         for (ConnectionHandler con : new ArrayList<ConnectionHandler>(connections)) {
@@ -101,15 +103,31 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         connections.add(con);
 
         con.send(con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " connected to RemoteBukkit!");
-        
+
         for (String msg : oldMsgs) {
             con.send(msg);
         }
-        
+
         con.start();
     }
 
     public void didCloseConnection(ConnectionHandler con) {
         connections.remove(con);
+    }
+
+    public void dispatchCommands() {
+        synchronized (queuedCommands) {
+            for (String command : queuedCommands) {
+                getServer().dispatchCommand(getServer().getConsoleSender(), command);
+            }
+            
+            queuedCommands.clear();
+        }
+    }
+
+    public void dispatchCommandLater(String command) {
+        synchronized (queuedCommands) {
+            queuedCommands.add(command);
+        }
     }
 }

@@ -36,15 +36,20 @@ import org.bukkit.ChatColor;
  * @author Keeley Hoek (escortkeel@live.com)
  */
 public class LogHandler extends Handler {
+    private final RemoteBukkitPlugin plugin;
+
+    public LogHandler(RemoteBukkitPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
-    public synchronized void publish(final LogRecord record) {        
+    public synchronized void publish(final LogRecord record) {
         String message = record.getMessage();
-        
-        message.replaceAll("/\\[\\d\\d;?\\d?\\d?m?/", "");        
+
+        message.replaceAll("/\\[\\d\\d;?\\d?\\d?m?/", "");
         message.replaceAll("/\\[m/", "");
-        
-        RemoteBukkitPlugin.getInstance().broadcast(
+
+        plugin.broadcast(
                 new SimpleDateFormat("hh:mm a").format(
                 new Date(record.getMillis())) + " [" + record.getLevel().toString() + "] " + ChatColor.stripColor(message));
     }

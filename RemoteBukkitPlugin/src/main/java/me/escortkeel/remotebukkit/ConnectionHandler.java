@@ -23,7 +23,6 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package me.escortkeel.remotebukkit;
 
 import java.io.BufferedReader;
@@ -38,14 +37,16 @@ import java.net.Socket;
  */
 public class ConnectionHandler extends Thread {
 
+    private final RemoteBukkitPlugin plugin;
     private final Socket s;
-    private final PrintStream out;
     private final BufferedReader in;
+    private final PrintStream out;
 
-    public ConnectionHandler(Socket s) throws IOException {
+    public ConnectionHandler(RemoteBukkitPlugin plugin, Socket s) throws IOException {
+        this.plugin = plugin;
         this.s = s;
-        this.out = new PrintStream(s.getOutputStream());
         this.in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        this.out = new PrintStream(s.getOutputStream());
     }
 
     @Override
@@ -53,16 +54,16 @@ public class ConnectionHandler extends Thread {
         while (true) {
             try {
                 String input = in.readLine();
-                
-                if(input == null) {
+
+                if (input == null) {
                     break;
                 }
-                
-                RemoteBukkitPlugin.getInstance().getServer().dispatchCommand(RemoteBukkitPlugin.getInstance().getServer().getConsoleSender(), input);
+
+                plugin.dispatchCommandLater(input);
             } catch (IOException ex) {
             }
         }
-        
+
         try {
             kill();
         } catch (IOException ex) {
@@ -70,9 +71,9 @@ public class ConnectionHandler extends Thread {
     }
 
     public void kill() throws IOException {
-        RemoteBukkitPlugin.getInstance().didCloseConnection(this);
-        
-        send("RemoteBukkit closing connection!");        
+        plugin.didCloseConnection(this);
+
+        send("RemoteBukkit closing connection!");
         s.close();
     }
 

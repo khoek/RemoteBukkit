@@ -37,9 +37,12 @@ import java.net.Socket;
  */
 public class ConnectionListener extends Thread {
 
-    private ServerSocket s;
+    private final RemoteBukkitPlugin plugin;
+    private final ServerSocket s;
 
-    public ConnectionListener(int port) {
+    public ConnectionListener(RemoteBukkitPlugin plugin, int port) {
+        this.plugin = plugin;
+        
         try {
             s = new ServerSocket(port);
         } catch (IOException ex) {
@@ -56,9 +59,9 @@ public class ConnectionListener extends Thread {
             Socket sock;
             try {
                 sock = s.accept();
-                
+
                 try {
-                    ConnectionHandler handler = new ConnectionHandler(sock);
+                    ConnectionHandler handler = new ConnectionHandler(plugin, sock);
 
                     String user = null;
                     String pass = null;
@@ -80,8 +83,8 @@ public class ConnectionListener extends Thread {
                         throw e;
                     }
 
-                    if (user.equals(RemoteBukkitPlugin.getInstance().getConfig().get("user")) && pass.equals(RemoteBukkitPlugin.getInstance().getConfig().get("pass"))) {
-                        RemoteBukkitPlugin.getInstance().didAcceptConnection(handler);
+                    if (user.equals(plugin.getConfig().get("user")) && pass.equals(plugin.getConfig().get("pass"))) {
+                        plugin.didAcceptConnection(handler);
                     } else {
                         handler.send("Incorrect Credentials.");
 
