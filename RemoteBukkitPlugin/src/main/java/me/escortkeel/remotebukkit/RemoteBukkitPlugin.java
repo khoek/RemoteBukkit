@@ -38,7 +38,6 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     private ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
     private static ArrayList<String> oldMsgs = new ArrayList<String>();
     private ConnectionListener listener;
-    private final ArrayList<String> queuedCommands = new ArrayList<String>();
 
     @Override
     public void onLoad() {
@@ -51,13 +50,6 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         
         log.log(Level.INFO, getDescription().getFullName().concat(" is enabled! By Keeley Hoek (escortkeel)"));
         log.addHandler(handler);
-
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-
-            public void run() {
-                dispatchCommands();
-            }
-        }, 1, 1);
 
         int port = getConfig().getInt("port");
 
@@ -113,21 +105,5 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
     public void didCloseConnection(ConnectionHandler con) {
         connections.remove(con);
-    }
-
-    public void dispatchCommands() {
-        synchronized (queuedCommands) {
-            for (String command : queuedCommands) {
-                getServer().dispatchCommand(getServer().getConsoleSender(), command);
-            }
-            
-            queuedCommands.clear();
-        }
-    }
-
-    public void dispatchCommandLater(String command) {
-        synchronized (queuedCommands) {
-            queuedCommands.add(command);
-        }
     }
 }

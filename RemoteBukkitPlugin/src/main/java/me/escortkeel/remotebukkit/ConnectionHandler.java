@@ -53,13 +53,18 @@ public class ConnectionHandler extends Thread {
     public void run() {
         while (true) {
             try {
-                String input = in.readLine();
+                final String input = in.readLine();
 
                 if (input == null) {
                     break;
                 }
 
-                plugin.dispatchCommandLater(input);
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                    public void run() {
+                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), input);
+                    }
+                });
             } catch (IOException ex) {
             }
         }
