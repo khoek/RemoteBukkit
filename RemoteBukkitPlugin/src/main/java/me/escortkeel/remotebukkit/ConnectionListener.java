@@ -76,7 +76,7 @@ public class ConnectionListener extends Thread {
                         e.addSuppressed(ex);
 
                         try {
-                            handler.kill();
+                            handler.kill("Could not read credentials!");
                         } catch (IOException ed) {
                         }
 
@@ -89,7 +89,7 @@ public class ConnectionListener extends Thread {
                         handler.send("Incorrect Credentials.");
 
                         try {
-                            handler.kill();
+                            handler.kill("Incorrect Credentials.");
                         } catch (IOException ex) {
                         }
                     }

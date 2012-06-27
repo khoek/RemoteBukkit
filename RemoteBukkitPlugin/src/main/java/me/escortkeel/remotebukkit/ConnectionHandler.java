@@ -70,18 +70,25 @@ public class ConnectionHandler extends Thread {
         }
 
         try {
-            kill();
+            kill("Client sent null!");
         } catch (IOException ex) {
         }
     }
 
-    public void kill() throws IOException {
+    public void kill(String reason) throws IOException {
         plugin.didCloseConnection(this);
 
-        send("RemoteBukkit closing connection!");
+        send("RemoteBukkit closing connection for reason:");
+        send();
+        send(reason);
+        
         s.close();
     }
 
+    public void send() {
+        out.println();
+    }
+    
     public void send(String msg) {
         out.println(msg);
     }

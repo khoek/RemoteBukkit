@@ -85,7 +85,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
         for (ConnectionHandler con : new ArrayList<ConnectionHandler>(connections)) {
             try {
-                con.kill();
+                con.kill("Plugin is being disabled!");
             } catch (IOException ex) {
             }
         }
