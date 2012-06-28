@@ -29,7 +29,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 
 /**
  *
@@ -54,10 +59,22 @@ public class SocketForwardThread extends Thread {
                 String input = in.readLine();
 
                 if (input == null) {
+                    String[] lines = gui.getConsole().getText().split("\n");
+
+                    System.out.println(lines[lines.length - 3]);
+                    System.out.println(lines[lines.length - 2]);
+                    System.out.println(lines[lines.length - 1]);
+                    
+                    if (lines[lines.length - 3].equals("RemoteBukkit closing connection for reason:\r")) {
+                        JOptionPane.showMessageDialog(gui, "Server closed connection for reason:\n\n" + lines[lines.length - 1], "Error", JOptionPane.ERROR_MESSAGE);
+
+                        System.exit(0);
+                    }
+
                     JOptionPane.showMessageDialog(gui, "Server closed connection.", "Error", JOptionPane.ERROR_MESSAGE);
 
                     System.exit(0);
-                } else if(input.equals("Incorrect Credentials.")) {
+                } else if (input.equals("Incorrect Credentials.")) {
                     JOptionPane.showMessageDialog(gui, "Incorrect Credentials.", "Error", JOptionPane.ERROR_MESSAGE);
 
                     System.exit(0);
