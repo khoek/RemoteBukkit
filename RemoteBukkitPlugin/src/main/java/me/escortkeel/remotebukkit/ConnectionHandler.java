@@ -66,6 +66,7 @@ public class ConnectionHandler extends Thread {
                     }
                 });
             } catch (IOException ex) {
+                break;
             }
         }
 
