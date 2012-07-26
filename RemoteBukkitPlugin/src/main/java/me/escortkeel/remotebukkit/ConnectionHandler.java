@@ -51,8 +51,8 @@ public class ConnectionHandler extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            try {
+        try {
+            while (true) {
                 final String input = in.readLine();
 
                 if (input == null) {
@@ -65,13 +65,12 @@ public class ConnectionHandler extends Thread {
                         plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), input);
                     }
                 });
-            } catch (IOException ex) {
-                break;
             }
+        } catch (IOException ex) {
         }
 
         try {
-            kill("Client sent null!");
+            kill("Socket Read Error!");
         } catch (IOException ex) {
         }
     }
@@ -82,14 +81,14 @@ public class ConnectionHandler extends Thread {
         send("RemoteBukkit closing connection for reason:");
         send();
         send(reason);
-        
+
         s.close();
     }
 
     public void send() {
         out.println();
     }
-    
+
     public void send(String msg) {
         out.println(msg);
     }
