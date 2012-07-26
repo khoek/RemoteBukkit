@@ -34,9 +34,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RemoteBukkitPlugin extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft");
+    private static final ArrayList<String> oldMsgs = new ArrayList<String>();
     private LogHandler handler;
     private ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
-    private static ArrayList<String> oldMsgs = new ArrayList<String>();
     private ConnectionListener listener;
 
     @Override
@@ -47,7 +47,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         handler = new LogHandler(this);
-        
+
         log.log(Level.INFO, getDescription().getFullName().concat(" is enabled! By Keeley Hoek (escortkeel)"));
         log.addHandler(handler);
 
@@ -72,11 +72,13 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         kill();
     }
 
-    public synchronized void broadcast(String msg) {
-        oldMsgs.add(msg);
+    public void broadcast(String msg) {
+        synchronized (oldMsgs) {
+            oldMsgs.add(msg);
 
-        for (ConnectionHandler con : new ArrayList<ConnectionHandler>(connections)) {
-            con.send(msg);
+            for (ConnectionHandler con : new ArrayList<ConnectionHandler>(connections)) {
+                con.send(msg);
+            }
         }
     }
 
@@ -96,8 +98,10 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
         con.send(con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " connected to RemoteBukkit!");
 
-        for (String msg : oldMsgs) {
-            con.send(msg);
+        synchronized (oldMsgs) {
+            for (String msg : oldMsgs) {
+                con.send(msg);
+            }
         }
 
         con.start();
