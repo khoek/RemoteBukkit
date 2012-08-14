@@ -25,7 +25,9 @@
  */
 package me.escortkeel.remotebukkit.gui;
 
+import java.awt.event.KeyEvent;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.text.DefaultCaret;
 
@@ -36,11 +38,16 @@ import javax.swing.text.DefaultCaret;
 public class GUI extends JFrame {
 
     private final PrintStream out;
+    private final ArrayList<String> cache = new ArrayList();
+    private int cacheIndex = -1;
+    private String preCache;
 
     public GUI(PrintStream out) {
         this.out = out;
 
         initComponents();
+
+        inputField.requestFocusInWindow();
 
         ((DefaultCaret) console.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
@@ -58,6 +65,13 @@ public class GUI extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("RemoteBukkit GUI");
+        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                formWindowGainedFocus(evt);
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            }
+        });
 
         jLabel1.setText(">");
 
@@ -66,6 +80,11 @@ public class GUI extends JFrame {
         inputField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inputFieldActionPerformed(evt);
+            }
+        });
+        inputField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                inputFieldKeyPressed(evt);
             }
         });
 
@@ -100,9 +119,43 @@ public class GUI extends JFrame {
     private void inputFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputFieldActionPerformed
         if (!evt.getActionCommand().isEmpty()) {
             out.println(evt.getActionCommand());
+            cache.add(0, evt.getActionCommand());
+
             inputField.setText("");
         }
     }//GEN-LAST:event_inputFieldActionPerformed
+
+    private void inputFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_UP) {
+            if (cacheIndex == -1) {
+                preCache = inputField.getText();
+            }
+
+            cacheIndex++;
+
+            if (cacheIndex < cache.size()) {
+                inputField.setText(cache.get(cacheIndex));
+            } else {
+                cacheIndex = cache.size() - 1;
+            }
+        } else if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            cacheIndex--;
+
+            if (cacheIndex == -1) {
+                inputField.setText(preCache);
+            } else if (cacheIndex > -1) {
+                inputField.setText(cache.get(cacheIndex));
+            } else {
+                cacheIndex = -1;
+            }
+        } else {
+            cacheIndex = -1;
+        }
+    }//GEN-LAST:event_inputFieldKeyPressed
+
+    private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
+        inputField.requestFocusInWindow();
+    }//GEN-LAST:event_formWindowGainedFocus
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private me.escortkeel.remotebukkit.gui.ColorPane console;
     private javax.swing.JTextField inputField;

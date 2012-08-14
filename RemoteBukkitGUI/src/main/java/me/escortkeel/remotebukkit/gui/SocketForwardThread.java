@@ -62,7 +62,6 @@ public class SocketForwardThread extends Thread {
                     String[] lines = gui.getConsole().getText().split("\n");
 
                     System.out.println(lines[lines.length - 3]);
-                    System.out.println(lines[lines.length - 2]);
                     System.out.println(lines[lines.length - 1]);
                     
                     if (lines[lines.length - 3].equals("RemoteBukkit closing connection for reason:\r")) {
