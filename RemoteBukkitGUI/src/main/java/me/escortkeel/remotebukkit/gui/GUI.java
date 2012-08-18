@@ -118,8 +118,14 @@ public class GUI extends JFrame {
 
     private void inputFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputFieldActionPerformed
         if (!evt.getActionCommand().isEmpty()) {
-            out.println(evt.getActionCommand());
-            cache.add(0, evt.getActionCommand());
+            String command = evt.getActionCommand();
+            
+            if(command.startsWith("/") && command.length() > 1) {
+                command = command.substring(1);
+            }
+            
+            out.println(command);
+            cache.add(0, command);
 
             inputField.setText("");
         }

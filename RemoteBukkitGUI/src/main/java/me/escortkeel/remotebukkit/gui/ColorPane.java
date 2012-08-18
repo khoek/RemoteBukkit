@@ -109,40 +109,40 @@ public class ColorPane extends JTextPane {
         }
     }
 
-    public static Color getANSIColor(String ANSIColor) {
-        if (ANSIColor.equals("\u001B[30;1m")) {
+    public static Color getANSIColor(String ansiColor) {
+        if (ansiColor.equals("\u001B[30;1m")) {
             return B_Black;
-        } else if (ANSIColor.equals("\u001B[31;1m")) {
+        } else if (ansiColor.equals("\u001B[31;1m")) {
             return B_Red;
-        } else if (ANSIColor.equals("\u001B[32;1m")) {
+        } else if (ansiColor.equals("\u001B[32;1m")) {
             return B_Green;
-        } else if (ANSIColor.equals("\u001B[33;1m")) {
+        } else if (ansiColor.equals("\u001B[33;1m")) {
             return B_Yellow;
-        } else if (ANSIColor.equals("\u001B[34;1m")) {
+        } else if (ansiColor.equals("\u001B[34;1m")) {
             return B_Blue;
-        } else if (ANSIColor.equals("\u001B[35;1m")) {
+        } else if (ansiColor.equals("\u001B[35;1m")) {
             return B_Magenta;
-        } else if (ANSIColor.equals("\u001B[36;1m")) {
+        } else if (ansiColor.equals("\u001B[36;1m")) {
             return B_Cyan;
-        } else if (ANSIColor.equals("\u001B[37;1m")) {
+        } else if (ansiColor.equals("\u001B[37;1m")) {
             return B_White;
-        } else if (ANSIColor.startsWith("\u001B[30")) {
+        } else if (ansiColor.startsWith("\u001B[30")) {
             return D_Black;
-        } else if (ANSIColor.startsWith("\u001B[31")) {
+        } else if (ansiColor.startsWith("\u001B[31")) {
             return D_Red;
-        } else if (ANSIColor.startsWith("\u001B[32")) {
+        } else if (ansiColor.startsWith("\u001B[32")) {
             return D_Green;
-        } else if (ANSIColor.startsWith("\u001B[33")) {
+        } else if (ansiColor.startsWith("\u001B[33")) {
             return D_Yellow;
-        } else if (ANSIColor.startsWith("\u001B[34")) {
+        } else if (ansiColor.startsWith("\u001B[34")) {
             return D_Blue;
-        } else if (ANSIColor.startsWith("\u001B[35")) {
+        } else if (ansiColor.startsWith("\u001B[35")) {
             return D_Magenta;
-        } else if (ANSIColor.startsWith("\u001B[36")) {
+        } else if (ansiColor.startsWith("\u001B[36")) {
             return D_Cyan;
-        } else if (ANSIColor.startsWith("\u001B[37")) {
+        } else if (ansiColor.startsWith("\u001B[37")) {
             return D_White;
-        } else if (ANSIColor.equals("\u001B[m")) {
+        } else if (ansiColor.equals("\u001B[m")) {
             return cReset;
         } else {
             return B_White;
