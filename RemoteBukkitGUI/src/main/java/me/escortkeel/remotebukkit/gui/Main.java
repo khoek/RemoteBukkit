@@ -38,7 +38,7 @@ public class Main {
 
     public static final int MAJOR = 1;
     public static final int MINOR = 2;
-    public static final int BUILD = 0;
+    public static final int BUILD = 1;
 
     public static void main(String[] args) throws IOException {
         System.out.println("Launching RemoteBukkit GUI Client v" + MAJOR + "." + MINOR + "." + BUILD + "!");
