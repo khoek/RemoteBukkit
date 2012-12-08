@@ -36,5 +36,15 @@ Use: [hostname:ip] [user] [pass] <switches>
 * --help - Prints the help message.
 * --pefixlevel - Prefixes each output message with the log level. 
 
+### Telnet Client (advanced)
+
+RemoteBukkit also supports telnet connections. Just connect to the normal server port as you would with the console or GUI clients and then supply the server's username and then password on separate lines.
+
+e.g.
+
+    $ telnet [hostname:ip]
+    user
+    pass
+
 ##Download
 The latest builds can be downloaded [here](http://dev.bukkit.org/server-mods/remotebukkit/files/).
