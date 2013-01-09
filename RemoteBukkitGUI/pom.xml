@@ -5,6 +5,7 @@
 
     <groupId>me.escortkeel</groupId>
     <artifactId>RemoteBukkitGUI</artifactId>
+    <version>1.2.1</version>
     <packaging>jar</packaging>
 
     <name>RemoteBukkitGUI</name>
@@ -30,6 +31,12 @@
     </properties>
   
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -45,5 +52,4 @@
             </plugin>
         </plugins>
     </build>
-    <version>1.2.1</version>
 </project>

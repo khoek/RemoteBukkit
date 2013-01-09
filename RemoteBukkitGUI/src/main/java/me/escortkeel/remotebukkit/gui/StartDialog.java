@@ -40,7 +40,7 @@ public class StartDialog extends javax.swing.JFrame {
     public StartDialog() {
         initComponents();
 
-        version.setText("RemoteBukkit GUI v" + Main.MAJOR + "." + Main.MINOR + "." + Main.BUILD);
+        version.setText("RemoteBukkit GUI v" + Main.getVersionString());
 
         setLocationRelativeTo(null);
 

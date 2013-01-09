@@ -26,6 +26,7 @@
 package me.escortkeel.remotebukkit.gui;
 
 import java.io.IOException;
+import java.util.Properties;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -36,12 +37,26 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Main {
 
-    public static final int MAJOR = 1;
-    public static final int MINOR = 2;
-    public static final int BUILD = 1;
+    private static String version;
+
+    public static String getVersionString() {
+        return version;
+    }
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Launching RemoteBukkit GUI Client v" + MAJOR + "." + MINOR + "." + BUILD + "!");
+        try {
+            Properties meta = new Properties();
+            meta.load(Main.class.getResourceAsStream("/meta.properties"));
+
+            version = meta.getProperty("version");
+        } catch (NullPointerException ex) {
+        }
+        
+        if(version == null) {
+            version = "X.X.X";
+        }
+
+        System.out.println("Launching RemoteBukkit GUI Client v" + version + "!");
         System.out.println();
         System.out.println("By Keeley Hoek (escortkeel)");
         System.out.println();
