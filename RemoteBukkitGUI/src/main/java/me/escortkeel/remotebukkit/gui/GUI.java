@@ -162,6 +162,7 @@ public class GUI extends JFrame {
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
         inputField.requestFocusInWindow();
     }//GEN-LAST:event_formWindowGainedFocus
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private me.escortkeel.remotebukkit.gui.ColorPane console;
     private javax.swing.JTextField inputField;

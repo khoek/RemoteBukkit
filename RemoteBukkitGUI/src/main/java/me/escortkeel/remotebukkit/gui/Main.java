@@ -25,6 +25,8 @@
  */
 package me.escortkeel.remotebukkit.gui;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 import javax.swing.JOptionPane;
@@ -37,8 +39,13 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Main {
 
+    private static File cache = new File(System.getProperty("java.io.tmpdir"), "remotebukkitgui.properties");
     private static String version;
 
+    public static File getCacheFile() {
+        return cache;
+    }
+    
     public static String getVersionString() {
         return version;
     }
@@ -51,8 +58,8 @@ public class Main {
             version = meta.getProperty("version");
         } catch (NullPointerException ex) {
         }
-        
-        if(version == null) {
+
+        if (version == null) {
             version = "X.X.X";
         }
 
@@ -107,13 +114,29 @@ public class Main {
 
                 sd.setVisible(true);
 
-                sd.launchGUI();
-
+                sd.connect();
             } else {
                 System.out.println("Incorrect Argument Syntax!");
                 printHelpAndExit(1);
             }
         } else {
+            if (cache.exists()) {
+                Properties p = new Properties();
+                p.load(new FileReader(cache));
+                
+                sd.getHost().setText(p.getProperty("host", ""));
+                sd.getPort().setText(p.getProperty("port", ""));
+                sd.getUsername().setText(p.getProperty("username", ""));
+                sd.getPassword().setText(p.getProperty("password", ""));
+                
+                if(sd.getHost().getText().length() > 1
+                        && sd.getPort().getText().length() > 1
+                        && sd.getUsername().getText().length() > 1
+                        && sd.getPassword().getPassword().length > 1) {
+                    sd.getRemember().setSelected(true);
+                }
+            }
+
             sd.setVisible(true);
         }
     }

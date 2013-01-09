@@ -25,6 +25,10 @@
  */
 package me.escortkeel.remotebukkit.gui;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
@@ -63,6 +67,7 @@ public class StartDialog extends javax.swing.JFrame {
         username = new javax.swing.JTextField();
         version = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        remember = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("RemoteBukkit GUI");
@@ -73,7 +78,7 @@ public class StartDialog extends javax.swing.JFrame {
         launchButton.setText("Connect");
         launchButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                launchButtonActionPerformed(evt);
+                launch(evt);
             }
         });
 
@@ -81,7 +86,7 @@ public class StartDialog extends javax.swing.JFrame {
 
         host.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hostActionPerformed(evt);
+                launch(evt);
             }
         });
 
@@ -93,25 +98,27 @@ public class StartDialog extends javax.swing.JFrame {
 
         port.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                portActionPerformed(evt);
+                launch(evt);
             }
         });
 
         password.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordActionPerformed(evt);
+                launch(evt);
             }
         });
 
         username.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usernameActionPerformed(evt);
+                launch(evt);
             }
         });
 
         version.setText("RemoteBukkit GUI vX.X.X");
 
         jLabel5.setText("By Keeley Hoek (escortkeel)");
+
+        remember.setText("Remember me");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -120,7 +127,6 @@ public class StartDialog extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(launchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(prog, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -137,11 +143,15 @@ public class StartDialog extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(port, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE))
+                        .addComponent(port))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(version)))
+                        .addComponent(version))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(launchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(remember)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -161,41 +171,27 @@ public class StartDialog extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(launchButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(launchButton)
+                    .addComponent(remember))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(prog, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(version, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void launchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launchButtonActionPerformed
-        launchGUI();
-    }//GEN-LAST:event_launchButtonActionPerformed
+    private void launch(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launch
+        connect();
+    }//GEN-LAST:event_launch
 
-    private void hostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hostActionPerformed
-        launchGUI();
-    }//GEN-LAST:event_hostActionPerformed
-
-    private void portActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portActionPerformed
-        launchGUI();
-    }//GEN-LAST:event_portActionPerformed
-
-    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
-        launchGUI();
-    }//GEN-LAST:event_usernameActionPerformed
-
-    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
-        launchGUI();
-    }//GEN-LAST:event_passwordActionPerformed
-
-    public void launchGUI() {
+    public void connect() {
         if (host.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a hostname.", "Error", JOptionPane.ERROR_MESSAGE);
         } else if (port.getText().isEmpty()) {
@@ -211,6 +207,20 @@ public class StartDialog extends javax.swing.JFrame {
             username.setEnabled(false);
             password.setEnabled(false);
 
+            Properties p = new Properties();
+
+            if (remember.isSelected()) {
+                p.setProperty("host", getHost().getText());
+                p.setProperty("port", getPort().getText());
+                p.setProperty("username", getUsername().getText());
+                p.setProperty("password", new String(getPassword().getPassword()));
+            }
+
+            try {
+                p.store(new FileWriter(Main.getCacheFile()), null);
+            } catch (IOException ex) {
+            }
+
             new ServerConnectionThread(this).start();
         }
     }
@@ -225,6 +235,7 @@ public class StartDialog extends javax.swing.JFrame {
     private javax.swing.JPasswordField password;
     private javax.swing.JTextField port;
     private javax.swing.JProgressBar prog;
+    private javax.swing.JCheckBox remember;
     private javax.swing.JTextField username;
     private javax.swing.JLabel version;
     // End of variables declaration//GEN-END:variables
@@ -247,5 +258,9 @@ public class StartDialog extends javax.swing.JFrame {
 
     public JPasswordField getPassword() {
         return password;
+    }
+
+    public JCheckBox getRemember() {
+        return remember;
     }
 }
