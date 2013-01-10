@@ -20,7 +20,7 @@ RemoteBukkit offers a very simple and easy to use GUI client which you can use t
 Run the GUI with no arguments to open the Login Dialog.
 Run the GUI with the following arguments and it will attempt to use the supplied parameters to login automatically:
 
-Use: [hostname:ip] [user] [pass] <switches>
+Use: [hostname:port] [user] [pass] <switches>
 
 **Switches**
 
@@ -29,7 +29,7 @@ Use: [hostname:ip] [user] [pass] <switches>
 ### Console Client
 If you prefer to use a console-based application to connect to the RemoteBukkit plugin you can too! The console argument syntax is very simple but the program but will print help information if you supply no/the wrong number of/invalid arguments:
 
-Use: [hostname:ip] [user] [pass] <switches>
+Use: [hostname:port] [user] [pass] <switches>
 
 **Switches**
 
