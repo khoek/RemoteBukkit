@@ -32,7 +32,10 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jline.console.ConsoleReader;
 
 /**
@@ -41,115 +44,121 @@ import jline.console.ConsoleReader;
  */
 public class Main {
 
-    public static final int MAJOR = 1;
-    public static final int MINOR = 3;
-    public static final int BUILD = 2;
-    public static int SWITCHCOUNT = 1;
-    private static boolean prefixLevel = false;
-    private static volatile ConsoleReader console = null;
-
-    public static synchronized ConsoleReader getConsole() throws IOException {
-        if (console == null) {
-            console = new ConsoleReader();
-        }
-
-        return console;
-    }
+    private static String exec = null;
 
     public static void main(String[] args) throws IOException {
+        String version = null;
+
         try {
-            System.out.println("Launching RemoteBukkit Console Client v" + MAJOR + "." + MINOR + "." + BUILD + "!");
-            System.out.println();
-            System.out.println("By Keeley Hoek (escortkeel)");
-            System.out.println();
+            Properties meta = new Properties();
+            meta.load(Main.class.getResourceAsStream("/meta.properties"));
 
-            checkPreSwitches(args);
+            version = meta.getProperty("version");
+        } catch (NullPointerException ex) {
+        }
 
-            if (args.length >= 3 && args.length <= 3 + SWITCHCOUNT) {
-                checkSwitches(Arrays.copyOfRange(args, 3, args.length));
+        if (version == null) {
+            version = "X.X.X";
+        }
 
+        System.out.println("Launching RemoteBukkit Console Client v" + version + "!");
+        System.out.println("By Keeley Hoek (escortkeel)");
+        System.out.println();
+
+        try {
+            if (args.length >= 3 && checkSwitches(Arrays.copyOfRange(args, 3, args.length))) {
                 Scanner sc = new Scanner(args[0]).useDelimiter(":");
-
-                final Socket s = new Socket(sc.next(), sc.nextInt());
-
-                Runtime.getRuntime().addShutdownHook(new Thread("Shutdown Thread") {
-
-                    @Override
-                    public void run() {
-                        try {
-                            s.close();
-                        } catch (IOException ex) {
-                        }
-                    }
-                });
+                Socket s = new Socket(sc.next(), sc.nextInt());
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                PrintStream out = new PrintStream(s.getOutputStream());
-
-                InputForwardThread ift = new InputForwardThread(out);
-                ift.setDaemon(true);
+                final PrintStream out = new PrintStream(s.getOutputStream());
 
                 out.println(args[1]);
                 out.println(args[2]);
 
-                ift.start();
+                if (exec != null) {
+                    System.out.println("Executing command: " + exec);
 
-                while (true) {
-                    String msg = in.readLine();
+                    out.println(exec);
+                } else {
+                    final ConsoleReader console = new ConsoleReader();
 
-                    if (msg == null) {
-                        break;
-                    } else {
-                        if (prefixLevel) {
+                    Thread ift = new Thread("Input Forward Thread") {
+                        @Override
+                        public void run() {
                             try {
-                                msg = msg.split("\\[")[1].split("\\]")[0] + msg;
-                            } catch (Exception e) {
+                                while (true) {
+                                    out.println(console.readLine(">"));
+                                }
+                            } catch (IOException ex) {
+                                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
+                    };
+                    ift.setDaemon(true);
+                    ift.start();
 
-                        getConsole().println('\r' + msg);
-                        getConsole().flush();
-                        getConsole().drawLine();
-                        getConsole().flush();
+                    while (true) {
+                        String msg = in.readLine();
+
+                        if (msg == null) {
+                            break;
+                        } else {
+                            console.println('\r' + msg);
+                            console.flush();
+                            console.drawLine();
+                            console.flush();
+                        }
                     }
                 }
             } else {
-                System.out.println("Incorrect Argument Syntax!");
+                System.out.println("Invalid argument syntax!");
+                System.out.println();
                 printHelpAndExit(1);
             }
         } catch (NoSuchElementException ex) {
-            System.out.println("Incorrect Argument Syntax!");
+            System.out.println("Invalid hostname-port pair!");
+            System.out.println();
             printHelpAndExit(1);
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
         }
     }
 
-    private static void checkPreSwitches(String[] switches) {
-        for (String arg : switches) {
-            if (arg.equalsIgnoreCase("--help")) {
-                printHelpAndExit(0);
+    private static boolean checkSwitches(String[] switches) {
+        for (int i = 0; i < switches.length; i++) {
+            if (!switches[i].startsWith("--")) {
+                return false;
             }
-        }
-    }
 
-    private static void checkSwitches(String[] switches) {
-        for (String arg : switches) {
-            if (arg.equalsIgnoreCase("--prefixlevel")) {
-                prefixLevel = true;
-            } else {
-                System.out.println("Invalid Switch: " + arg);
-                printHelpAndExit(1);
+            String arg = switches[i].substring(2);
+
+            switch (arg) {
+                case "help":
+                    printHelpAndExit(0);
+                    break;
+                case "exec":
+                    if (i + 1 < switches.length) {
+                        exec = switches[i + 1];
+                        i++;
+                    } else {
+                        System.out.println("The --exec switch requires a parameter.");
+                        return false;
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid switch: " + arg);
+                    return false;
             }
         }
+
+        return true;
     }
 
     private static void printHelpAndExit(int exitCode) {
-        System.out.println("Use: [hostname:ip] [user] [pass] <swithches>");
+        System.out.println("Use: [hostname:port] [user] [pass] <switches>");
         System.out.println();
         System.out.println("Switches:");
-        System.out.println("--help       Prints this help message.");
-        System.out.println("--pefixlevel Prefixes each output message with the log level.");
+        System.out.println("--help           Prints this help message.");
+        System.out.println("--exec <command> Sends <command> and then exits.");
 
         System.exit(exitCode);
     }
