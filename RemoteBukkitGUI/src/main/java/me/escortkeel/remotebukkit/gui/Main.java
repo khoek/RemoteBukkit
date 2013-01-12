@@ -64,7 +64,6 @@ public class Main {
         }
 
         System.out.println("Launching RemoteBukkit GUI Client v" + version + "!");
-        System.out.println();
         System.out.println("By Keeley Hoek (escortkeel)");
         System.out.println();
 
