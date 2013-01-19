@@ -36,6 +36,7 @@ import org.bukkit.ChatColor;
  * @author Keeley Hoek (escortkeel@live.com)
  */
 public class LogHandler extends Handler {
+
     private final RemoteBukkitPlugin plugin;
 
     public LogHandler(RemoteBukkitPlugin plugin) {

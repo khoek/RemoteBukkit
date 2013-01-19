@@ -60,7 +60,6 @@ public class ConnectionHandler extends Thread {
                 }
 
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
                     public void run() {
                         plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), input);
                     }

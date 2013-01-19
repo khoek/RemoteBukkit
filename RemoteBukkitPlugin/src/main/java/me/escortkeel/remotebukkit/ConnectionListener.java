@@ -42,7 +42,7 @@ public class ConnectionListener extends Thread {
 
     public ConnectionListener(RemoteBukkitPlugin plugin, int port) {
         this.plugin = plugin;
-        
+
         try {
             s = new ServerSocket(port);
         } catch (IOException ex) {
