@@ -23,43 +23,34 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package me.escortkeel.remotebukkit;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
-import org.bukkit.ChatColor;
+package me.escortkeel.remotebukkit.console;
 
 /**
  *
  * @author Keeley Hoek (escortkeel@live.com)
  */
-public class LogHandler extends Handler {
+public enum Directive {
 
-    private final RemoteBukkitPlugin plugin;
+    INTERACTIVE(""),
+    NOLOG("NOLOG");
 
-    public LogHandler(RemoteBukkitPlugin plugin) {
-        this.plugin = plugin;
+    public static Directive toDirective(String raw) {
+        for (Directive d : Directive.values()) {
+            if (d.toString().equalsIgnoreCase(raw)) {
+                return d;
+            }
+        }
+
+        return null;
+    }
+    public final String qualifier;
+
+    Directive(String qualifier) {
+        this.qualifier = qualifier;
     }
 
     @Override
-    public synchronized void publish(final LogRecord record) {
-        String message = record.getMessage();
-
-        message.replaceAll("/\\[\\d\\d;?\\d?\\d?m?/", "");
-        message.replaceAll("/\\[m/", "");
-
-        plugin.broadcast(
-                new SimpleDateFormat("hh:mm a").format(
-                new Date(record.getMillis())) + " [" + record.getLevel().toString() + "] " + ChatColor.stripColor(message));
-    }
-
-    @Override
-    public void flush() {
-    }
-
-    @Override
-    public void close() throws SecurityException {
+    public String toString() {
+        return qualifier;
     }
 }

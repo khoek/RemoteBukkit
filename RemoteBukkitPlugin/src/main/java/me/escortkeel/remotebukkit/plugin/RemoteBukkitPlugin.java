@@ -23,7 +23,7 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package me.escortkeel.remotebukkit;
+package me.escortkeel.remotebukkit.plugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,9 +34,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RemoteBukkitPlugin extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft");
-    private static final ArrayList<String> oldMsgs = new ArrayList<String>();
+    private static final ArrayList<String> oldMsgs = new ArrayList<>();
+
+    public static void log(String msg) {
+        log.log(Level.INFO, "[RemoteBukkit] " + msg);
+    }
+
+    public static void log(String msg, IOException ex) {
+        log.log(Level.INFO, "[RemoteBukkit] " + msg, ex);
+    }
     private LogHandler handler;
-    private ArrayList<ConnectionHandler> connections = new ArrayList<ConnectionHandler>();
+    private ArrayList<ConnectionHandler> connections = new ArrayList<>();
     private ConnectionListener listener;
 
     @Override
@@ -53,7 +61,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
         int port = getConfig().getInt("port");
 
-        if (port <= 1000) {
+        if (port <= 1024) {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified, using default port 25564");
 
             port = 25564;
@@ -69,45 +77,45 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     public void onDisable() {
         log.removeHandler(handler);
 
-        kill();
+        listener.kill();
+
+        for (ConnectionHandler con : new ArrayList<>(connections)) {
+            con.kill("Plugin is being disabled!");
+        }
     }
 
     public void broadcast(String msg) {
         synchronized (oldMsgs) {
             oldMsgs.add(msg);
 
-            for (ConnectionHandler con : new ArrayList<ConnectionHandler>(connections)) {
+            for (ConnectionHandler con : new ArrayList<>(connections)) {
                 con.send(msg);
             }
         }
     }
 
-    public void kill() {
-        listener.kill();
+    public void didEstablishConnection(ConnectionHandler con, Directive directive) {
+        RemoteBukkitPlugin.log("Connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " was successfully established.");
 
-        for (ConnectionHandler con : new ArrayList<ConnectionHandler>(connections)) {
-            try {
-                con.kill("Plugin is being disabled!");
-            } catch (IOException ex) {
-            }
-        }
-    }
-
-    public void didAcceptConnection(ConnectionHandler con) {
         connections.add(con);
 
-        con.send(con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " connected to RemoteBukkit!");
-
-        synchronized (oldMsgs) {
-            for (String msg : oldMsgs) {
-                con.send(msg);
+        if (directive == Directive.NOLOG) {
+            con.send("Connection was successfully established.");
+        } else {
+            synchronized (oldMsgs) {
+                for (String msg : oldMsgs) {
+                    con.send(msg);
+                }
             }
         }
 
+        con.setDirective(directive);
         con.start();
     }
 
     public void didCloseConnection(ConnectionHandler con) {
+        RemoteBukkitPlugin.log("Connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " was closed.");
+
         connections.remove(con);
     }
 }

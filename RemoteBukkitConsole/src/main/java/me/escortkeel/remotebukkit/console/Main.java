@@ -68,46 +68,61 @@ public class Main {
         try {
             if (args.length >= 3 && checkSwitches(Arrays.copyOfRange(args, 3, args.length))) {
                 Scanner sc = new Scanner(args[0]).useDelimiter(":");
-                Socket s = new Socket(sc.next(), sc.nextInt());
+                try (Socket s = new Socket(sc.next(), sc.nextInt())) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                    final PrintStream out = new PrintStream(s.getOutputStream());
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                final PrintStream out = new PrintStream(s.getOutputStream());
+                    out.println(args[1]);
+                    out.println(args[2]);
 
-                out.println(args[1]);
-                out.println(args[2]);
+                    if (exec != null) {
+                        out.println(Directive.NOLOG);
 
-                if (exec != null) {
-                    System.out.println("Executing command: " + exec);
-
-                    out.println(exec);
-                } else {
-                    final ConsoleReader console = new ConsoleReader();
-
-                    Thread ift = new Thread("Input Forward Thread") {
-                        @Override
-                        public void run() {
-                            try {
-                                while (true) {
-                                    out.println(console.readLine(">"));
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                        System.out.println("Executing command: " + exec);
+                        
+                        if ("".equals(in.readLine())) {
+                            System.out.println();
+                            System.out.println("Error while attempting to connect to server.");
+                            System.out.println("The error message can be found below.");
+                            System.out.println();
+                            System.out.println(in.readLine());
+                            System.out.println(in.readLine());
+                            
+                            System.exit(1);
                         }
-                    };
-                    ift.setDaemon(true);
-                    ift.start();
+                        
+                        out.println(exec);
+                    } else {
+                        out.println(Directive.INTERACTIVE);
 
-                    while (true) {
-                        String msg = in.readLine();
+                        final ConsoleReader console = new ConsoleReader();
 
-                        if (msg == null) {
-                            break;
-                        } else {
-                            console.println('\r' + msg);
-                            console.flush();
-                            console.drawLine();
-                            console.flush();
+                        Thread ift = new Thread("Input Forward Thread") {
+                            @Override
+                            public void run() {
+                                try {
+                                    while (true) {
+                                        out.println(console.readLine(">"));
+                                    }
+                                } catch (IOException ex) {
+                                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        };
+                        ift.setDaemon(true);
+                        ift.start();
+
+                        while (true) {
+                            String msg = in.readLine();
+
+                            if (msg == null) {
+                                break;
+                            } else {
+                                console.println('\r' + msg);
+                                console.flush();
+                                console.drawLine();
+                                console.flush();
+                            }
                         }
                     }
                 }
@@ -158,7 +173,8 @@ public class Main {
         System.out.println();
         System.out.println("Switches:");
         System.out.println("--help           Prints this help message.");
-        System.out.println("--exec <command> Sends <command> and then exits.");
+        System.out.println("--nolog          Instructs the server not to send any log information to the client.");
+        System.out.println("--exec <command> Sends <command> and then exits. Implies --nolog.");
 
         System.exit(exitCode);
     }

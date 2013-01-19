@@ -23,7 +23,7 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package me.escortkeel.remotebukkit;
+package me.escortkeel.remotebukkit.plugin;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,12 +41,18 @@ public class ConnectionHandler extends Thread {
     private final Socket s;
     private final BufferedReader in;
     private final PrintStream out;
+    private final int number;
+    private Directive directive;
 
-    public ConnectionHandler(RemoteBukkitPlugin plugin, Socket s) throws IOException {
+    public ConnectionHandler(RemoteBukkitPlugin plugin, Socket s, int number) throws IOException {
+        super("RemoteBukkit-ConnectionHandler");
+        this.setDaemon(true);
+
         this.plugin = plugin;
         this.s = s;
         this.in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         this.out = new PrintStream(s.getOutputStream());
+        this.number = number;
     }
 
     @Override
@@ -59,7 +65,10 @@ public class ConnectionHandler extends Thread {
                     break;
                 }
 
+                RemoteBukkitPlugin.log("Connection #" + getNumber() + " from " + s.getInetAddress().getHostAddress() + ":" + s.getPort() + " dispatched command: " + input);
+
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    @Override
                     public void run() {
                         plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), input);
                     }
@@ -68,31 +77,44 @@ public class ConnectionHandler extends Thread {
         } catch (IOException ex) {
         }
 
-        try {
-            kill("Socket Closed!");
-        } catch (IOException ex) {
-        }
+        kill();
     }
 
-    public void kill(String reason) throws IOException {
-        plugin.didCloseConnection(this);
-
-        send("RemoteBukkit closing connection for reason:");
-        send();
-        send(reason);
-
-        s.close();
-    }
-
-    public void send() {
-        out.println();
-    }
-
-    public void send(String msg) {
-        out.println(msg);
+    public int getNumber() {
+        return number;
     }
 
     public Socket getSocket() {
         return s;
+    }
+
+    public Directive getDirective() {
+        return directive;
+    }
+
+    public void setDirective(Directive directive) {
+        this.directive = directive;
+    }
+
+    public void kill() {
+        plugin.didCloseConnection(this);
+
+        try {
+            s.close();
+        } catch (IOException ex) {
+        }
+    }
+
+    public void kill(String reason) {
+        send("\nRemoteBukkit closing connection because:");
+        send(reason);
+
+        kill();
+    }
+
+    public void send(String msg) {
+        if (directive != Directive.NOLOG) {
+            out.println(msg);
+        }
     }
 }
