@@ -44,6 +44,7 @@ import jline.console.ConsoleReader;
  */
 public class Main {
 
+    private static boolean nolog = false;
     private static String exec = null;
 
     public static void main(String[] args) throws IOException {
@@ -75,11 +76,13 @@ public class Main {
                     out.println(args[1]);
                     out.println(args[2]);
 
-                    if (exec != null) {
+                    if (nolog) {
                         out.println(Directive.NOLOG);
+                    }
 
+                    if (exec != null) {
                         System.out.println("Executing command: " + exec);
-                        
+
                         if ("".equals(in.readLine())) {
                             System.out.println();
                             System.out.println("Error while attempting to connect to server.");
@@ -87,13 +90,15 @@ public class Main {
                             System.out.println();
                             System.out.println(in.readLine());
                             System.out.println(in.readLine());
-                            
+
                             System.exit(1);
                         }
-                        
+
                         out.println(exec);
                     } else {
-                        out.println(Directive.INTERACTIVE);
+                        if (!nolog) {
+                            out.println(Directive.INTERACTIVE);
+                        }
 
                         final ConsoleReader console = new ConsoleReader();
 
@@ -158,6 +163,9 @@ public class Main {
                         System.out.println("The --exec switch requires a parameter.");
                         return false;
                     }
+                //Intentional follow-on
+                case "nolog":
+                    nolog = true;
                     break;
                 default:
                     System.out.println("Invalid switch: " + arg);
