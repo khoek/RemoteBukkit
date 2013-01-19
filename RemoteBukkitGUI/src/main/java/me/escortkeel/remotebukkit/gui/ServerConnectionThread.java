@@ -91,6 +91,7 @@ public class ServerConnectionThread extends Thread {
 
             out.println(sd.getUsername().getText());
             out.println(new String(sd.getPassword().getPassword()));
+            out.println(Directive.INTERACTIVE); //TODO Selectable direcrive
 
             sd.getProg().setString("Done!");
             sd.getProg().setValue(100);
