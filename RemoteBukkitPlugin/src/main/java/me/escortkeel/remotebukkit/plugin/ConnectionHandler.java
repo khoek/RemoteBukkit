@@ -106,6 +106,8 @@ public class ConnectionHandler extends Thread {
     }
 
     public void kill(String reason) {
+        directive = Directive.INTERACTIVE;
+        
         send("\nRemoteBukkit closing connection because:");
         send(reason);
 
