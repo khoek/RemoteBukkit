@@ -5,7 +5,7 @@
 
     <groupId>me.escortkeel</groupId>
     <artifactId>remotebukkitconsole</artifactId>
-    <version>1.4.0</version>
+    <version>2.0.0</version>
 
     <name>RemoteBukkitConsole</name>
     <description>RemoteBukkitConsole is a console client for RemoteBukkit, a Bukkit remote console plugin.</description>
