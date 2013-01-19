@@ -69,7 +69,7 @@ public class ConnectionHandler extends Thread {
         }
 
         try {
-            kill("Socket Read Error!");
+            kill("Socket Closed!");
         } catch (IOException ex) {
         }
     }
