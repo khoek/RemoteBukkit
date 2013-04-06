@@ -33,7 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class RemoteBukkitPlugin extends JavaPlugin {
 
-    private static final Logger log = Logger.getLogger("Minecraft");
+    private static final Logger log = Logger.getLogger("Minecraft-Server");
     private static final ArrayList<String> oldMsgs = new ArrayList<>();
 
     public static void log(String msg) {
