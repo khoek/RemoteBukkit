@@ -35,6 +35,8 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft-Server");
     private static final ArrayList<String> oldMsgs = new ArrayList<>();
+    private String username;
+    private String password;
 
     public static void log(String msg) {
         log.log(Level.INFO, "[RemoteBukkit] " + msg);
@@ -59,8 +61,25 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         log.log(Level.INFO, getDescription().getFullName().concat(" is enabled! By Keeley Hoek (escortkeel)"));
         log.addHandler(handler);
 
-        int port = getConfig().getInt("port");
+        if(getConfig().get("username") instanceof String) {
+            username = ((String) getConfig().get("username"));
+        } else if(getConfig().get("username") instanceof Integer) {
+            username = ((Integer) getConfig().get("username")).toString();
+        } else {
+            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no username specified, defaulting to \"username\"");
+            username = "username";
+        }
 
+        if(getConfig().get("password") instanceof String) {
+            password = ((String) getConfig().get("password"));
+        } else if(getConfig().get("password") instanceof Integer) {
+            password = ((Integer) getConfig().get("password")).toString();
+        } else {
+            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no password specified, defaulting to \"password\"");
+            password = "password";
+        }
+        
+        int port = getConfig().getInt("port");
         if (port <= 1024) {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified, using default port 25564");
 
@@ -117,5 +136,13 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         RemoteBukkitPlugin.log("Connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " was closed.");
 
         connections.remove(con);
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

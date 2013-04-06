@@ -68,7 +68,7 @@ public class ConnectionListener extends Thread {
                     String user = out.readLine();
                     String pass = out.readLine();
 
-                    if (plugin.getConfig().get("user").equals(user) && plugin.getConfig().get("pass").equals(pass)) {
+                    if (plugin.getUsername().equals(user) && plugin.getPassword().equals(pass)) {
                         String raw = out.readLine();
                         Directive directive = Directive.toDirective(raw);
                         if (directive == null) {
@@ -94,7 +94,9 @@ public class ConnectionListener extends Thread {
             }
 
             try {
-                con.kill();
+                if (con != null) {
+                    con.kill();
+                }
             } catch (Exception e) {
             }
         }
