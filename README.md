@@ -34,17 +34,20 @@ Use: [hostname:port] [user] [pass] <switches>
 **Switches**
 
 * --help - Prints the help message.
-* --pefixlevel - Prefixes each output message with the log level. 
+* --nolog - Instructs the server not to send any log information to the client. 
+* --exec <command> - Sends <command> to the server and then terminates. Useful for scripts. Make sure that you surround commands containing spaces in inverted commas (e.g. "say Hello, World!").
+ 
 
 ### Telnet Client (advanced)
 
-RemoteBukkit also supports telnet connections. Just connect to the normal server port as you would with the console or GUI clients and then supply the server's username and then password on separate lines.
+RemoteBukkit also supports telnet connections. Just connect to the normal server port as you would with the console or GUI clients and then supply the server's username and then password on separate lines, followed by a third, blank line.
 
 e.g.
 
     $ telnet [hostname:ip]
-    user
-    pass
+    [user]
+    [pass]
+    [blank line]
 
 ##Download
 The latest builds can be downloaded [here](http://dev.bukkit.org/server-mods/remotebukkit/files/).
