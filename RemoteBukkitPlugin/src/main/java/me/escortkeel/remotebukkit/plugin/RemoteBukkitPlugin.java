@@ -61,19 +61,21 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         log.log(Level.INFO, getDescription().getFullName().concat(" is enabled! By Keeley Hoek (escortkeel)"));
         log.addHandler(handler);
 
-        if(getConfig().get("username") instanceof String) {
-            username = ((String) getConfig().get("username"));
-        } else if(getConfig().get("username") instanceof Integer) {
-            username = ((Integer) getConfig().get("username")).toString();
+        Object rawUsername = getConfig().get("user");
+        if(rawUsername instanceof String) {
+            username = ((String) rawUsername);
+        } else if(rawUsername instanceof Integer) {
+            username = ((Integer) rawUsername).toString();
         } else {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no username specified, defaulting to \"username\"");
             username = "username";
         }
 
-        if(getConfig().get("password") instanceof String) {
-            password = ((String) getConfig().get("password"));
-        } else if(getConfig().get("password") instanceof Integer) {
-            password = ((Integer) getConfig().get("password")).toString();
+        Object rawPassword = getConfig().get("pass");
+        if(rawPassword instanceof String) {
+            password = ((String) rawPassword);
+        } else if(rawPassword instanceof Integer) {
+            password = ((Integer) rawPassword).toString();
         } else {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no password specified, defaulting to \"password\"");
             password = "password";
