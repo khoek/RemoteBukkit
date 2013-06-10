@@ -27,7 +27,7 @@ package me.escortkeel.remotebukkit.plugin;
 
 /**
  *
- * @author Keeley Hoek (escortkeel@live.com)
+ * @author Keeley Hoek (escortkeel@gmail.com)
  */
 public enum Directive {
 

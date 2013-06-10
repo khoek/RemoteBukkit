@@ -31,9 +31,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ *
+ * @author Keeley Hoek (escortkeel@gmail.com)
+ */
 public class RemoteBukkitPlugin extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft-Server");
@@ -68,7 +71,6 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         int port = 25564;
         try {
             int num = 0;
-            System.out.println(getConfig().getList("users"));
             List<Map<String, Object>> usersSection = null;
             try {
                 usersSection = (List<Map<String, Object>>) getConfig().getList("users");

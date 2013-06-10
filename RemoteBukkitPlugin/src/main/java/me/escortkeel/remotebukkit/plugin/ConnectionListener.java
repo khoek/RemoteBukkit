@@ -31,7 +31,7 @@ import java.net.Socket;
 
 /**
  *
- * @author Keeley Hoek (escortkeel@live.com)
+ * @author Keeley Hoek (escortkeel@gmail.com)
  */
 public class ConnectionListener extends Thread {
 

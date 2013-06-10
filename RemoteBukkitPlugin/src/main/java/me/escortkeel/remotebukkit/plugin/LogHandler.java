@@ -29,11 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import org.bukkit.ChatColor;
 
 /**
  *
- * @author Keeley Hoek (escortkeel@live.com)
+ * @author Keeley Hoek (escortkeel@gmail.com)
  */
 public class LogHandler extends Handler {
 
@@ -45,14 +44,8 @@ public class LogHandler extends Handler {
 
     @Override
     public synchronized void publish(final LogRecord record) {
-        String message = record.getMessage();
-
-        message.replaceAll("/\\[\\d\\d;?\\d?\\d?m?/", "");
-        message.replaceAll("/\\[m/", "");
-
-        plugin.broadcast(
-                new SimpleDateFormat("hh:mm a").format(
-                new Date(record.getMillis())) + " [" + record.getLevel().toString() + "] " + ChatColor.stripColor(message));
+        plugin.broadcast(new SimpleDateFormat("hh:mm a").format(
+                new Date(record.getMillis())) + " [" + record.getLevel().toString() + "] " + record.getMessage());
     }
 
     @Override
