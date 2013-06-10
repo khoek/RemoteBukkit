@@ -49,6 +49,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     private LogHandler handler;
     private ArrayList<ConnectionHandler> connections = new ArrayList<>();
     private ConnectionListener listener;
+    private int logsize;
 
     @Override
     public void onLoad() {
@@ -63,9 +64,9 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         log.addHandler(handler);
 
         Object rawUsername = getConfig().get("user");
-        if(rawUsername instanceof String) {
+        if (rawUsername instanceof String) {
             username = ((String) rawUsername);
-        } else if(rawUsername instanceof Integer) {
+        } else if (rawUsername instanceof Integer) {
             username = ((Integer) rawUsername).toString();
         } else {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no username specified, defaulting to \"username\"");
@@ -73,23 +74,30 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         }
 
         Object rawPassword = getConfig().get("pass");
-        if(rawPassword instanceof String) {
+        if (rawPassword instanceof String) {
             password = ((String) rawPassword);
-        } else if(rawPassword instanceof Integer) {
+        } else if (rawPassword instanceof Integer) {
             password = ((Integer) rawPassword).toString();
         } else {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no password specified, defaulting to \"password\"");
             password = "password";
         }
-        
+
         int port = getConfig().getInt("port");
         if (port <= 1024) {
             log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified (must be greater than 1024), using default port 25564");
 
             port = 25564;
         }
-        
+
         verbose = getConfig().getBoolean("verbose");
+
+        logsize = getConfig().getInt("logsize", -1);
+        if (logsize < 0) {
+            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no maximum logsize specified (must be greater than or equal to 0), defaulting to \"500\"");
+
+            logsize = 500;
+        }
 
         listener = new ConnectionListener(this, port);
         listener.start();
@@ -111,10 +119,13 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     public void broadcast(String msg) {
         synchronized (oldMsgs) {
             oldMsgs.add(msg);
-
-            for (ConnectionHandler con : new ArrayList<>(connections)) {
-                con.send(msg);
+            if (oldMsgs.size() > logsize) {
+                oldMsgs.remove(logsize == 0 ? 0 : 1);
             }
+        }
+
+        for (ConnectionHandler con : new ArrayList<>(connections)) {
+            con.send(msg);
         }
     }
 
@@ -147,7 +158,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     public String getPassword() {
         return password;
     }
-    
+
     public boolean doVerboseLogging() {
         return verbose;
     }
