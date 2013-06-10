@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Keeley Hoek
+ * Copyright (c) 2013, Keeley Hoek
  * All rights reserved.
  * 
  * Redistribution and use of this software in source and binary forms, with or without modification, are
@@ -68,7 +68,7 @@ public class ConnectionHandler extends Thread {
                 throw new IOException("Connection terminated before all credentials could be sent!");
             }
 
-            if (plugin.getUsername().equals(user) && plugin.getPassword().equals(pass)) {
+            if (plugin.areValidCredentials(user, pass)) {
                 String raw = in.readLine();
 
                 if (raw == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Keeley Hoek
+ * Copyright (c) 2013, Keeley Hoek
  * All rights reserved.
  * 
  * Redistribution and use of this software in source and binary forms, with or without modification, are

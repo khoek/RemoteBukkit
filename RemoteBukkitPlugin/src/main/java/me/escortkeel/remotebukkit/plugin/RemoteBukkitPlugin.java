@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Keeley Hoek
+ * Copyright (c) 2013, Keeley Hoek
  * All rights reserved.
  * 
  * Redistribution and use of this software in source and binary forms, with or without modification, are
@@ -27,16 +27,17 @@ package me.escortkeel.remotebukkit.plugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RemoteBukkitPlugin extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft-Server");
     private static final ArrayList<String> oldMsgs = new ArrayList<>();
-    private String username;
-    private String password;
     private boolean verbose;
 
     public static void log(String msg) {
@@ -46,8 +47,9 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     public static void log(String msg, IOException ex) {
         log.log(Level.INFO, "[RemoteBukkit] " + msg, ex);
     }
+    private final ArrayList<ConnectionHandler> connections = new ArrayList<>();
+    private ArrayList<User> users = new ArrayList<>();
     private LogHandler handler;
-    private ArrayList<ConnectionHandler> connections = new ArrayList<>();
     private ConnectionListener listener;
     private int logsize;
 
@@ -63,43 +65,81 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         log.log(Level.INFO, getDescription().getFullName().concat(" is enabled! By Keeley Hoek (escortkeel)"));
         log.addHandler(handler);
 
-        Object rawUsername = getConfig().get("user");
-        if (rawUsername instanceof String) {
-            username = ((String) rawUsername);
-        } else if (rawUsername instanceof Integer) {
-            username = ((Integer) rawUsername).toString();
-        } else {
-            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no username specified, defaulting to \"username\"");
-            username = "username";
-        }
+        int port = 25564;
+        try {
+            int num = 0;
+            System.out.println(getConfig().getList("users"));
+            List<Map<String, Object>> usersSection = null;
+            try {
+                usersSection = (List<Map<String, Object>>) getConfig().getList("users");
+            } catch (Exception e) {
+            }
+            if (usersSection != null) {
+                for (Map<String, Object> entry : usersSection) {
+                    num++;
+                    try {
+                        String username, password;
 
-        Object rawPassword = getConfig().get("pass");
-        if (rawPassword instanceof String) {
-            password = ((String) rawPassword);
-        } else if (rawPassword instanceof Integer) {
-            password = ((Integer) rawPassword).toString();
-        } else {
-            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no password specified, defaulting to \"password\"");
-            password = "password";
-        }
+                        Object rawUsername = entry.get("user");
+                        if (rawUsername instanceof String) {
+                            username = ((String) rawUsername);
+                        } else if (rawUsername instanceof Integer) {
+                            username = ((Integer) rawUsername).toString();
+                        } else {
+                            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no username specified for entry #" + num + ", defaulting to \"username\"");
+                            continue;
+                        }
 
-        int port = getConfig().getInt("port");
-        if (port <= 1024) {
-            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified (must be greater than 1024), using default port 25564");
+                        Object rawPassword = entry.get("pass");
+                        if (rawPassword instanceof String) {
+                            password = ((String) rawPassword);
+                        } else if (rawPassword instanceof Integer) {
+                            password = ((Integer) rawPassword).toString();
+                        } else {
+                            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no password specified for entry #" + num + ", defaulting to \"password\"");
+                            continue;
+                        }
 
-            port = 25564;
-        }
+                        users.add(new User(username, password));
+                    } catch (Exception e) {
+                        log.log(Level.WARNING, "[RemoteBukkit] Could not parse user entry #" + num + ", ignoring it (this entry will be deleted).");
+                    }
+                }
+            } else {
+                System.out.println("NULLL! OMGPOY!");
+            }
 
-        verbose = getConfig().getBoolean("verbose");
+            if (users.isEmpty()) {
+                log.log(Level.WARNING, "[RemoteBukkit] No user entries could be successfully parsed or no entries were provided. A default entry has been added (username = \"username\", password = \"password\").");
+                users.add(new User("username", "password"));
+            }
 
-        logsize = getConfig().getInt("logsize", -1);
-        if (logsize < 0) {
-            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no maximum logsize specified (must be greater than or equal to 0), defaulting to \"500\"");
+            port = getConfig().getInt("port");
+            if (port <= 1024) {
+                log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified (must be greater than 1024), using default port 25564");
 
+                port = 25564;
+            }
+
+            verbose = getConfig().getBoolean("verbose");
+
+            Object logsizeRaw = getConfig().get("logsize");
+            if (logsizeRaw instanceof Integer) {
+                logsize = (Integer) logsizeRaw;
+            } else {
+                log.log(Level.WARNING, "[RemoteBukkit] Illegal or no maximum logsize specified (must be greater than or equal to 0), defaulting to \"500\"");
+
+                logsize = 500;
+            }
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "[RemoteBukkit] Fatal error while parsing configuration file. The defaults have been assumed. PLEASE REPORT THIS ERROR AS AN ISSUE AT: http://github.com/escortkeel/RemoteBukkit/issues", ex);
+
+            users.clear();
+            users.add(new User("username", "password"));
             logsize = 500;
         }
-
         listener = new ConnectionListener(this, port);
+
         listener.start();
 
         saveConfig();
@@ -151,12 +191,14 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         connections.remove(con);
     }
 
-    public String getUsername() {
-        return username;
-    }
+    public boolean areValidCredentials(String username, String password) {
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return true;
+            }
+        }
 
-    public String getPassword() {
-        return password;
+        return false;
     }
 
     public boolean doVerboseLogging() {
