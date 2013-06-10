@@ -1,3 +1,4 @@
 user: username
 pass: password
 port: 25564
+verbose: true

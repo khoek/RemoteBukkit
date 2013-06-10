@@ -37,6 +37,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     private static final ArrayList<String> oldMsgs = new ArrayList<>();
     private String username;
     private String password;
+    private boolean verbose;
 
     public static void log(String msg) {
         log.log(Level.INFO, "[RemoteBukkit] " + msg);
@@ -83,10 +84,12 @@ public class RemoteBukkitPlugin extends JavaPlugin {
         
         int port = getConfig().getInt("port");
         if (port <= 1024) {
-            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified, using default port 25564");
+            log.log(Level.WARNING, "[RemoteBukkit] Illegal or no port specified (must be greater than 1024), using default port 25564");
 
             port = 25564;
         }
+        
+        verbose = getConfig().getBoolean("verbose");
 
         listener = new ConnectionListener(this, port);
         listener.start();
@@ -143,5 +146,9 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
     public String getPassword() {
         return password;
+    }
+    
+    public boolean doVerboseLogging() {
+        return verbose;
     }
 }

@@ -89,7 +89,9 @@ public class ConnectionHandler extends Thread {
                             break;
                         }
 
-                        RemoteBukkitPlugin.log("Connection #" + number + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " dispatched command: " + input);
+                        if (plugin.doVerboseLogging()) {
+                            RemoteBukkitPlugin.log("Connection #" + number + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " dispatched command: " + input);
+                        }
 
                         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                             @Override
