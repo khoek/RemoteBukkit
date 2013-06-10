@@ -38,43 +38,73 @@ import java.net.Socket;
 public class ConnectionHandler extends Thread {
 
     private final RemoteBukkitPlugin plugin;
-    private final Socket s;
-    private final BufferedReader in;
-    private final PrintStream out;
     private final int number;
+    private final Socket socket;
+    private final PrintStream out;
     private Directive directive;
+    private volatile boolean killed = false;
 
-    public ConnectionHandler(RemoteBukkitPlugin plugin, Socket s, int number) throws IOException {
+    public ConnectionHandler(RemoteBukkitPlugin plugin, int number, Socket socket) throws IOException {
         super("RemoteBukkit-ConnectionHandler");
-        this.setDaemon(true);
+        setDaemon(true);
 
         this.plugin = plugin;
-        this.s = s;
-        this.in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        this.out = new PrintStream(s.getOutputStream());
         this.number = number;
+        this.socket = socket;
+        this.out = new PrintStream(socket.getOutputStream());
     }
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                final String input = in.readLine();
+        RemoteBukkitPlugin.log("Connection #" + number + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " was accepted.");
 
-                if (input == null) {
-                    break;
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            String user = in.readLine();
+            String pass = in.readLine();
+
+            if (user == null || pass == null) {
+                throw new IOException("Connection terminated before all credentials could be sent!");
+            }
+
+            if (plugin.getUsername().equals(user) && plugin.getPassword().equals(pass)) {
+                String raw = in.readLine();
+
+                if (raw == null) {
+                    throw new IOException("Connection terminated before connection directive could be recieved!");
                 }
 
-                RemoteBukkitPlugin.log("Connection #" + getNumber() + " from " + s.getInetAddress().getHostAddress() + ":" + s.getPort() + " dispatched command: " + input);
+                directive = Directive.toDirective(raw);
+                if (directive == null) {
+                    RemoteBukkitPlugin.log("Connection #" + number + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " requested the use of an unsupported directive (\"" + raw + "\").");
+                    kill("Unsported directive \"" + raw + "\".");
+                } else {
+                    plugin.didEstablishConnection(this, directive);
 
-                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), input);
+                    while (true) {
+                        final String input = in.readLine();
+
+                        if (input == null) {
+                            break;
+                        }
+
+                        RemoteBukkitPlugin.log("Connection #" + number + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " dispatched command: " + input);
+
+                        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                            @Override
+                            public void run() {
+                                plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), input);
+                            }
+                        });
                     }
-                });
+                }
+            } else {
+                RemoteBukkitPlugin.log("Connection #" + number + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " attempted to authenticate using incorrect credentials.");
+                kill("Incorrect credentials.");
             }
         } catch (IOException ex) {
+            RemoteBukkitPlugin.log("Connection #" + number + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " abruptly closed the connection during authentication.");
         }
 
         kill();
@@ -85,29 +115,26 @@ public class ConnectionHandler extends Thread {
     }
 
     public Socket getSocket() {
-        return s;
-    }
-
-    public Directive getDirective() {
-        return directive;
-    }
-
-    public void setDirective(Directive directive) {
-        this.directive = directive;
+        return socket;
     }
 
     public void kill() {
+        if (killed) {
+            return;
+        }
+        killed = true;
+
         plugin.didCloseConnection(this);
 
         try {
-            s.close();
+            socket.close();
         } catch (IOException ex) {
         }
     }
 
     public void kill(String reason) {
         directive = Directive.INTERACTIVE;
-        
+
         send("\nRemoteBukkit closing connection because:");
         send(reason);
 

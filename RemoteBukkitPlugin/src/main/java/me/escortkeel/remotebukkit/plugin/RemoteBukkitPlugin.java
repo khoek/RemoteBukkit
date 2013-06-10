@@ -129,9 +129,6 @@ public class RemoteBukkitPlugin extends JavaPlugin {
                 }
             }
         }
-
-        con.setDirective(directive);
-        con.start();
     }
 
     public void didCloseConnection(ConnectionHandler con) {

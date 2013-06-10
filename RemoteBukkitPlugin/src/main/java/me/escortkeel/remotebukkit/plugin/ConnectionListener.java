@@ -25,10 +25,9 @@
  */
 package me.escortkeel.remotebukkit.plugin;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  *
@@ -55,49 +54,17 @@ public class ConnectionListener extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            ConnectionHandler con = null;
+        while (!s.isClosed()) {
+            Socket socket = null;
             try {
-                con = new ConnectionHandler(plugin, s.accept(), number++);
+                socket = s.accept();
 
-                RemoteBukkitPlugin.log("Connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " was accepted.");
-
-                try {
-                    BufferedReader out = new BufferedReader(new InputStreamReader(con.getSocket().getInputStream()));
-
-                    String user = out.readLine();
-                    String pass = out.readLine();
-
-                    if (plugin.getUsername().equals(user) && plugin.getPassword().equals(pass)) {
-                        String raw = out.readLine();
-                        Directive directive = Directive.toDirective(raw);
-                        if (directive == null) {
-                            RemoteBukkitPlugin.log("Connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " requested the use of an unsupported directive \"" + raw + "\".");
-                            con.kill("Unsported directive \"" + raw + "\".");
-                        } else {
-                            plugin.didEstablishConnection(con, directive);
-                        }
-                    } else {
-                        RemoteBukkitPlugin.log("Connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " attempted to authenticate using incorrect credentials.");
-                        con.kill("Incorrect credentials.");
-                    }
-
-                    continue;
-                } catch (IOException ex) {
-                    RemoteBukkitPlugin.log("Connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort() + " abruptly closed the connection during authentication.");
-                }
+                ConnectionHandler con = new ConnectionHandler(plugin, number++, socket);
+                con.start();
             } catch (IOException ex) {
-                try {
-                    RemoteBukkitPlugin.log("Exception while attempting to accept connection #" + con.getNumber() + " from " + con.getSocket().getInetAddress().getHostAddress() + ":" + con.getSocket().getPort(), ex);
-                } catch (Exception e) {
+                if (socket != null) {
+                    RemoteBukkitPlugin.log("Exception while attempting to accept connection #" + (number - 1) + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort(), ex);
                 }
-            }
-
-            try {
-                if (con != null) {
-                    con.kill();
-                }
-            } catch (Exception e) {
             }
         }
     }
