@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -40,6 +42,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class RemoteBukkitPlugin extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft-Server");
+    private static final org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
     private static final ArrayList<String> oldMsgs = new ArrayList<>();
     private boolean verbose;
 
@@ -52,7 +55,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
     }
     private final ArrayList<ConnectionHandler> connections = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
-    private LogHandler handler;
+    private LogAppender appender;
     private ConnectionListener listener;
     private int logsize;
 
@@ -63,10 +66,10 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        handler = new LogHandler(this);
+        appender = new LogAppender(this);
 
         log.log(Level.INFO, getDescription().getFullName().concat(" is enabled! By Keeley Hoek (escortkeel)"));
-        log.addHandler(handler);
+        logger.addAppender(appender);
 
         int port = 25564;
         try {
@@ -149,7 +152,7 @@ public class RemoteBukkitPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        log.removeHandler(handler);
+        logger.removeAppender(appender);
 
         listener.kill();
 
