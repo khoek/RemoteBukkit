@@ -41,6 +41,7 @@ import javax.swing.text.AbstractDocument;
  */
 public class StartDialog extends javax.swing.JFrame {
 
+	
     public StartDialog() {
         initComponents();
 
@@ -255,8 +256,15 @@ public class StartDialog extends javax.swing.JFrame {
     public JTextField getUsername() {
         return username;
     }
+    
+    public void Encrypt() {
+    	password.setText(Main.SHA512(password.getPassword().toString()));
+    }
 
     public JPasswordField getPassword() {
+    	if(Main.doEncrypt) {
+    		Encrypt();
+    	}
         return password;
     }
 
