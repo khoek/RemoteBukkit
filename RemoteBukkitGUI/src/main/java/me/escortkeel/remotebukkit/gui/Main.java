@@ -28,6 +28,9 @@ package me.escortkeel.remotebukkit.gui;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -39,7 +42,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Main {
 
-    private static File cache = new File(System.getProperty("java.io.tmpdir"), "remotebukkitgui.properties");
+	public static boolean doEncrypt;
+    private static File cache = new File("./", "remotebukkitgui.properties");
     private static String version;
 
     public static File getCacheFile() {
@@ -51,11 +55,13 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
+    	doEncrypt = !cache.exists();
         try {
             Properties meta = new Properties();
             meta.load(Main.class.getResourceAsStream("/meta.properties"));
 
             version = meta.getProperty("version");
+            
         } catch (NullPointerException ex) {
         }
 
@@ -127,7 +133,6 @@ public class Main {
                 sd.getPort().setText(p.getProperty("port", ""));
                 sd.getUsername().setText(p.getProperty("username", ""));
                 sd.getPassword().setText(p.getProperty("password", ""));
-                
                 if(sd.getHost().getText().length() > 1
                         && sd.getPort().getText().length() > 1
                         && sd.getUsername().getText().length() > 1
@@ -151,4 +156,35 @@ public class Main {
 
         System.exit(exitCode);
     }
+    public static String SHA512(String input) 
+    { 
+        try { 
+            // getInstance() method is called with algorithm SHA-512 
+            MessageDigest md = MessageDigest.getInstance("SHA-512"); 
+  
+            // digest() method is called 
+            // to calculate message digest of the input string 
+            // returned as array of byte 
+            byte[] messageDigest = md.digest(input.getBytes()); 
+  
+            // Convert byte array into signum representation 
+            BigInteger no = new BigInteger(1, messageDigest); 
+  
+            // Convert message digest into hex value 
+            String hashtext = no.toString(16); 
+  
+            // Add preceding 0s to make it 32 bit 
+            while (hashtext.length() < 32) { 
+                hashtext = "0" + hashtext; 
+            } 
+  
+            // return the HashText 
+            return hashtext; 
+        } 
+  
+        // For specifying wrong message digest algorithms 
+        catch (NoSuchAlgorithmException e) { 
+            throw new RuntimeException(e); 
+        } 
+    } 
 }
